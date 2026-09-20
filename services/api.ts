@@ -19,7 +19,7 @@ import { clamp } from "@/lib/thresholds";
  * ----------------------------------------------------------------
  */
 
-const USE_MOCK = true; // flip to false once your ESP8266 is posting real readings
+const USE_MOCK = false; // now using the real ESP8266 data
 // app/api/sensors/route.ts lives in THIS same app, so API_BASE can stay
 // empty ("" = same origin). Only set NEXT_PUBLIC_API_BASE_URL if you ever
 // move the API to a different host.
@@ -48,11 +48,9 @@ export async function fetchSensorSnapshot(prevGas?: number): Promise<SensorSnaps
 }
 
 export async function fetchDeviceInfo(): Promise<DeviceInfo> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/device`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch device info: ${res.status}`);
-    return res.json();
-  }
+  // Device info isn't sent by the ESP8266 sketch yet, so this stays mock
+  // for now. Add a POST from the ESP8266 + an /api/device route later if
+  // you want this to be live too.
   return {
     name: "ESP8266",
     location: "Living Room",
@@ -65,11 +63,7 @@ export async function fetchDeviceInfo(): Promise<DeviceInfo> {
 }
 
 export async function fetchSensorHealth(): Promise<SensorHealth[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/sensor-health`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch sensor health: ${res.status}`);
-    return res.json();
-  }
+  // Same as above — mock for now, no /api/sensor-health route exists yet.
   return [
     { id: "dht22", name: "DHT22", role: "Temp / Humidity", status: "operational" },
     { id: "mq4", name: "MQ-4", role: "Gas", status: "operational" },
@@ -78,11 +72,7 @@ export async function fetchSensorHealth(): Promise<SensorHealth[]> {
 }
 
 export async function fetchAlerts(): Promise<AlertItem[]> {
-  if (!USE_MOCK) {
-    const res = await fetch(`${API_BASE}/api/alerts`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to fetch alerts: ${res.status}`);
-    return res.json();
-  }
+  // Same as above — mock for now, no /api/alerts route exists yet.
   return [
     { id: 1, level: "warning", message: "Gas level exceeded threshold", time: "Today, 20:42" },
     { id: 2, level: "safe", message: "Temperature returned to normal", time: "Today, 20:35" },
