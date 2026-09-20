@@ -19,21 +19,24 @@ export default function SystemStatusHero({
   gas: number;
   deviceOnline: boolean;
 }) {
-  const isNormal = overall === "safe";
-  const isDanger = overall === "danger";
-  const title = isDanger ? "GAS DANGER" : overall === "warning" ? "GAS WARNING" : "SYSTEM NORMAL";
-  const desc = isDanger
-    ? "Gas level is critically high. Ventilate the area immediately."
-    : overall === "warning"
-    ? "Gas level is above the configured safety threshold."
-    : "All sensors are operating normally.";
-
   const rows: { label: string; status: StatusLevel; override?: string }[] = [
     { label: "Temperature", status: tempStatus(temp) },
     { label: "Humidity", status: humidityStatus(humidity) },
     { label: "Gas", status: gasStatus(gas) },
     { label: "Device", status: deviceOnline ? "safe" : "danger", override: deviceOnline ? "Online" : "Offline" },
   ];
+
+  const causes = rows.filter((r) => r.label !== "Device" && r.status === overall).map((r) => r.label);
+  const causeLabel = causes.length > 0 ? causes.join(" & ").toUpperCase() : "SYSTEM";
+
+  const isNormal = overall === "safe";
+  const isDanger = overall === "danger";
+  const title = isDanger ? `${causeLabel} DANGER` : overall === "warning" ? `${causeLabel} WARNING` : "SYSTEM NORMAL";
+  const desc = isDanger
+    ? `${causes.join(" and ")} ${causes.length > 1 ? "are" : "is"} critically out of range. Check the area immediately.`
+    : overall === "warning"
+    ? `${causes.join(" and ")} ${causes.length > 1 ? "are" : "is"} above the configured safety threshold.`
+    : "All sensors are operating normally.";
 
   return (
     <section
