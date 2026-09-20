@@ -10,7 +10,7 @@ const LABEL: Record<string, string> = {
 };
 
 export default function SensorHealthPanel({ sensors }: { sensors: SensorHealth[] }) {
-  const statusFor = (s: string) => (s === "unavailable" ? "danger" : "safe") as const;
+  const statusFor = (s: string): "danger" | "safe" => (s === "unavailable" ? "danger" : "safe");
   return (
     <section className="bg-surface border border-border rounded-[14px] px-5 py-[18px] animate-fadeSlideIn">
       <div className="font-bold text-[15px] mb-3.5">Sensor Health</div>
